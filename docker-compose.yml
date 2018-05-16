@@ -24,7 +24,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: wad-api
+    image: adnanrahic/wad-api
     networks: 
       - backend
     depends_on:
