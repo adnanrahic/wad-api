@@ -1,0 +1,49 @@
+version: "3"
+services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo:/data/db
+    networks: 
+      backend:
+        aliases:
+          - mongo
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=DB]
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "27017:27017"
+  
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: wad-api
+    networks: 
+      - backend
+    depends_on:
+      - mongo
+    deploy:
+      mode: replicated
+      replicas: 6
+      labels: [APP=API]
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    ports:
+      - "3000:3000"
+
+networks: 
+  backend:
+
+volumes:
+  mongo:
